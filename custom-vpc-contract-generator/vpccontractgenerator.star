@@ -34,12 +34,6 @@ def transform(new_artifacts, old_artifacts):
     configs['VpcContractSec'] = {}
 
     volumeNames = []
-    if len(confTypes) != 0:
-        volumeCountStr = m2k.query({"id": "move2kube.ibmvpc.volumes.volumecount", "type": "Input", "description": "Enter the number of volumes : ", "default": "0"})
-        volumeCount = int(volumeCountStr)
-        for i in range(volumeCount):
-            volumeName = m2k.query({"id": "move2kube.ibmvpc.volumes.[%d].name" % (i), "type": "Input", "description": "Enter the volume %d name : " % (i+1), "default": ""})
-            volumeNames.append(volumeName)
 
     for confType in confTypes:
         if confType == "env":
@@ -73,7 +67,7 @@ def transform(new_artifacts, old_artifacts):
                 data["SysLog"] = loggingOption
             volumes = {}
             for volumneName in volumeNames:
-                volumeSeed = m2k.query({"id": "move2kube.ibmvpc.env.volumes.[%d].seed" % (i), "type": "Input", "description": "Enter the volume %d seed : " % (i+1), "default": volumeName})
+                volumeSeed = m2k.query({"id": "move2kube.ibmvpc.env.volumes.[%d].seed" % (i), "type": "Input", "description": "Enter the volume %d seed : " % (i+1), "default": ""})
                 volume = {"seed": volumeSeed}
                 volumes[volumeName] = volume
 
@@ -129,9 +123,16 @@ def transform(new_artifacts, old_artifacts):
 
             workloadVolumes = {}
 
+            if len(confTypes) != 0:
+                volumeCountStr = m2k.query({"id": "move2kube.ibmvpc.volumes.volumecount", "type": "Input", "description": "Enter the number of volumes : ", "default": "0"})
+                volumeCount = int(volumeCountStr)
+                for i in range(volumeCount):
+                    volumeName = m2k.query({"id": "move2kube.ibmvpc.volumes.[%d].name" % (i), "type": "Input", "description": "Enter the volume %d name : " % (i+1), "default": ""})
+                    volumeNames.append(volumeName)
+
             for volumeName in volumeNames:
                 volume = {}
-                volumeSeed = m2k.query({"id": "move2kube.ibmvpc.workload.volumes.[%d].seed" % (i), "type": "Input", "description": "Enter the volume %d seed : " % (i+1), "default": volumeName})
+                volumeSeed = m2k.query({"id": "move2kube.ibmvpc.workload.volumes.[%d].seed" % (i), "type": "Input", "description": "Enter the volume %d seed : " % (i+1), "default": ""})
                 volume["seed"] = volumeSeed
                 volumeMount = m2k.query({"id": "move2kube.ibmvpc.workload.volumes.[%d].mount" % (i), "type": "Input", "description": "Enter the volume %d mount : " % (i+1), "default": ""})
                 if volumeMount != "":

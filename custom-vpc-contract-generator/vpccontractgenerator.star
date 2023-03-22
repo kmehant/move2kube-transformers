@@ -34,6 +34,7 @@ def transform(new_artifacts, old_artifacts):
     configs['VpcContractSec'] = {}
 
     volumeNames = []
+    
 
     for confType in confTypes:
         if confType == "env":
@@ -42,16 +43,9 @@ def transform(new_artifacts, old_artifacts):
                 logDnaHostName = m2k.query({"id": "move2kube.ibmvpc.env.logdnahostname", "type": "Input", "description": "Enter the log DNA hostname : ", "default": ""})
                 logDnaIngestionKey = m2k.query({"id": "move2kube.ibmvpc.env.logdnaingestionkey", "type": "Input", "description": "Enter the ingestion key : ", "default": ""})
                 logDNAPortStr = m2k.query({"id": "move2kube.ibmvpc.env.logdnaport", "type": "Input", "description": "Enter the log port : ", "default": "6514"})
-                logDNATagsCountStr = m2k.query({"id": "move2kube.ibmvpc.env.logdnatags.count", "type": "Input", "description": "Enter the number of tags : ", "default": "0"})
-                logDNATagsCount = int(logDNATagsCountStr)
-                tags = []
-                for i in range(logDNATagsCount):
-                    tag = m2k.query({"id": "move2kube.ibmvpc.env.logdnatags.[%d].tag" % (i), "type": "Input", "description": "Enter the tag %d value : " % (i+1), "default": ""})
-                    tags.append(tag)
                 data["LogDNAHostName"] = logDnaHostName
                 data["LogDNAIngestionKey"] = logDnaIngestionKey
                 data["LogDNAPort"] = logDNAPortStr
-                data["LogDNATags"] = tags
                 data["LogDNA"] = loggingOption
             else:
                 sysLogHostName = m2k.query({"id": "move2kube.ibmvpc.env.sysloghostname", "type": "Input", "description": "Enter the sysLog hostname : ", "default": ""})
@@ -111,18 +105,8 @@ def transform(new_artifacts, old_artifacts):
                 image = {"notary": '"'+registryNotary+'"', "publicKey": registryPublicKey}
                 dctImages[registryAdress] = image
 
-            rhsImagesCountStr = m2k.query({"id": "move2kube.ibmvpc.workload.rhsimagescount", "type": "Input", "description": "Enter the number of images signed using rhs: ", "default": "0"})
-            rhsImagesCount = int(rhsImagesCountStr)
-            rhsImages = {}
-
-            for i in range(rhsImagesCount):
-                registryAdress = m2k.query({"id": "move2kube.ibmvpc.workload.rhsregistry.[%d].address" % (i), "type": "Input", "description": "Enter the image %d registry address : " % (i+1), "default": ""})
-                registryPublicKey = m2k.query({"id": "move2kube.ibmvpc.env.rhsregistry.[%d].publickey" % (i), "type": "Input", "description": "Enter the image %d public key : " % (i+1), "default": ""})
-                image = {"publicKey": registryPublicKey}
-                rhsImages[registryAdress] = image
 
             workloadVolumes = {}
-
             if len(confTypes) != 0:
                 volumeCountStr = m2k.query({"id": "move2kube.ibmvpc.volumes.volumecount", "type": "Input", "description": "Enter the number of volumes : ", "default": "0"})
                 volumeCount = int(volumeCountStr)
@@ -156,7 +140,6 @@ def transform(new_artifacts, old_artifacts):
             data["Auths"] = auths
             data["composeDigest"] = composeDigest
             data["dctImages"] = dctImages
-            data["rhsImages"] = rhsImages
             data["WorkloadVolumes"] = workloadVolumes
             data["WorkloadEnvs"] = workloadEnvs
 
